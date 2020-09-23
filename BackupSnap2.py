@@ -241,7 +241,7 @@ def main(argv):
     OnlyOneInstanceEnd()
 
 def Help():
-    print(SCRIPTNAME + ' -s/--source=<source> -d/--dest=<destination> -b/--block=<block name> [-p/--perm] [-v/--verbose] i --bandwidth=<bandwidth> --hour=<hour> --day=<day> --month=<month> --year=<year>')
+    print(SCRIPTNAME + ' -s/--source=<source> -d/--dest=<destination> -b/--block=<block name> [-p/--perm] [-v/--verbose] [--bandwidth=<bandwidth>] [--hour=<hour>] [--day=<day>] [--month=<month>] [--year=<year>]')
     print("Deploy: wget http://nextware.it/BackupSnap[2|3].py.gz -OBackupSnap.py.gz && gunzip BackupSnap.py.gz -f && chmod u+x BackupSnap.py && ./BackupSnap.py")
 
 def GetPath(path):
