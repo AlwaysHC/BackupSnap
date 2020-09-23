@@ -11,7 +11,7 @@ import shutil
 import sys
 
 #import time
-VERSION = "2003.27.5.17"
+VERSION = "2009.23.5.18"
 SCRIPTNAME = os.path.basename(__file__)
 WINDOWS = platform.system() == 'Windows'
 DATETIMESUFFIX = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
