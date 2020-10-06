@@ -11,7 +11,7 @@ import shutil
 import sys
 
 #import time
-VERSION = "2009.23.5.18"
+VERSION = "2010.06.6.18"
 SCRIPTNAME = os.path.basename(__file__)
 WINDOWS = platform.system() == 'Windows'
 DATETIMESUFFIX = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -97,7 +97,7 @@ def main(argv):
     _FileLogRsyncOut = os.path.join(_Dest, "Log", _Block + "." + DATETIMESUFFIX + ".log.out.rsync")
 
     if not os.path.exists(_Dest):
-        Log(_Dest + " non esiste", noFile=True, saveStatus=True)
+        Log(_Dest + " non esiste", noFile=True)
         sys.exit()
 
     if not os.path.exists(os.path.join(_Dest, "Log")):
@@ -116,7 +116,7 @@ def main(argv):
     if os.path.isdir(_Source):
         Log(_Source + " pronta per il backup")
     else:
-        Log(_Source + " vuota", saveStatus=True)
+        Log(_Source + " vuota")
         sys.exit()
 
     if not os.path.exists(os.path.join(_Dest, "Corrente")):
@@ -133,7 +133,12 @@ def main(argv):
     SaveStatus("Inizio")
 
     Excluded = os.path.realpath(__file__) + ".escludi." + _Block
-    if not os.path.exists(Excluded):
+    if os.path.exists(Excluded):
+        f = open(Excluded, "r")
+        Log("File esclusioni: " + os.linesep + f.read())
+        f.close()
+    else:
+        Log("File esclusioni creato: " + Excluded)
         f = open(Excluded, "w")
         f.close()
 
@@ -258,7 +263,7 @@ def GetPath(path):
 def DateTimeLog():
     return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def Log(text, noFile=False, saveStatus=False):
+def Log(text, noFile=False):
     TestoLog = "---> " + DateTimeLog() + " " + text
     """print(TestoLog.decode(sys.getfilesystemencoding()))""" #Diff 2-3
     print(TestoLog) #Diff 2-3
