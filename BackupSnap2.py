@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+#TODO Touch dell'ultima cartella
+#TODO Integrazione con du e rdfind. Se du registra una dimensione troppa alta per la nuova cartella, allora va eseguito rdfind
+
 #Mirko Sacripanti - mirko@nextware.it - +39.3355899896
 import datetime
 import getopt
@@ -10,14 +13,14 @@ import subprocess
 import shutil
 import sys
 
-#import time
-VERSION = "2010.06.6.18 Py2"
+VERSION = "2106.03.7.19 Py2"
 SCRIPTNAME = os.path.basename(__file__)
 WINDOWS = platform.system() == 'Windows'
 DATETIMESUFFIX = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
 _Source = ""
 _Dest = ""
+_LogDir = ""
 _Block = ""
 _Perm = False
 _Verbose = False
@@ -39,6 +42,7 @@ _Status = []
 def main(argv):
     global _Source
     global _Dest
+    global _LogDir
     global _Block
     global _Perm
     global _Verbose
@@ -58,7 +62,7 @@ def main(argv):
     print(SCRIPTNAME + ' ' + VERSION + ' ' + platform.system())
 
     try:
-        opts, args = getopt.getopt(argv, "s:d:b:pv", ["source=", "dest=", "block=", "perm", "verbose", "bandwidth=", "hour=", "day=", "week=", "month=", "year="])
+        opts, args = getopt.getopt(argv, "s:d:b:pv", ["source=", "dest=", "logdir=", "block=", "perm", "verbose", "bandwidth=", "hour=", "day=", "week=", "month=", "year="])
     except getopt.GetoptError:
         Help()
         sys.exit()
@@ -68,6 +72,8 @@ def main(argv):
             _Source = arg
         elif opt in ("-d", "--dest"):
             _Dest = arg
+        elif opt in ("--logdir"):
+            _LogDir = arg
         elif opt in ("-b", "--block"):
             _Block = arg
         elif opt in ("-p", "--perm"):
@@ -92,19 +98,24 @@ def main(argv):
         sys.exit()
 
     _FileStatus = os.path.realpath(__file__) + ".ultimo." + _Block
-    _FileLog = os.path.join(_Dest, "Log", _Block + "." + DATETIMESUFFIX + ".log")
-    _FileLogRsync = os.path.join(_Dest, "Log", _Block + "." + DATETIMESUFFIX + ".log.rsync")
-    _FileLogRsyncOut = os.path.join(_Dest, "Log", _Block + "." + DATETIMESUFFIX + ".log.out.rsync")
+    
+    LogDir = os.path.join(_Dest, "Log")
+    if (_LogDir != ""):
+        LogDir = _LogDir
+
+    _FileLog = os.path.join(LogDir, _Block + "." + DATETIMESUFFIX + ".log")
+    _FileLogRsync = os.path.join(LogDir, _Block + "." + DATETIMESUFFIX + ".log.rsync")
+    _FileLogRsyncOut = os.path.join(LogDir, _Block + "." + DATETIMESUFFIX + ".log.out.rsync")
 
     if not os.path.exists(_Dest):
         Log(_Dest + " non esiste", noFile=True)
         sys.exit()
 
-    if not os.path.exists(os.path.join(_Dest, "Log")):
+    if not os.path.exists(LogDir):
         try:
-            os.makedirs(os.path.join(_Dest, "Log"))
+            os.makedirs(LogDir)
         except:
-            Log("Errore creazione cartella Log: " + PrintException("Log", [os.path.join(_Dest, "Log")]), noFile=True)
+            Log("Errore creazione cartella Log: " + PrintException("Log", [LogDir]), noFile=True)
             sys.exit()
 
     PrintDiskSpace()
@@ -146,6 +157,7 @@ def main(argv):
     print("Parametri:")
     print("Source: " + _Source)
     print("Dest: " + _Dest)
+    print("LogDir: " + _LogDir)
     print("Block: " + _Block)
     print("Perm: " + str(_Perm))
     print("Verbose: " + str(_Verbose))
